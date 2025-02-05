@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
-const ProductPrice = ({value, className}: {value: number, className?: string}) => {
-    const stringValue = value.toFixed(2);
-    const [initValue, floatValue] = stringValue.split('.')
+const ProductPrice = ({value, className}: {value: string, className?: string}) => {
+    // const stringValue = value.toFixed(2);
+    const [initValue, floatValue] = value.split('.')
     return (  
         <p className={cn('text-2xl', className)}>
             <span className="text-xs align-upper">$</span>
