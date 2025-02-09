@@ -15,3 +15,19 @@ export const insertProducts = z.object({
     banner: z.string().nullable(),
     price: currency
 })
+
+export const signInFormSchema = z.object({
+    email: z.string().email('Invalod email'),
+    password: z.string().min(6, "At last 6 symbols")
+}) 
+
+
+export const signUpFormSchema = z.object({
+    name: z.string().min(3, "At least 3 charactesr"),
+    email: z.string().email('Invalod email'),
+    password: z.string().min(6, "At last 6 symbols"),
+    confirmPassword: z.string().min(6, "At last 6 symbols").refine((data: any) => data.password === data.confirmPassword, {
+        message: "Not equal",
+        path: ['confirmPassword']
+    })
+}) 
