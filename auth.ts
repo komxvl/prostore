@@ -1,9 +1,9 @@
 import NextAuh from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from '@/db/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compareSync } from 'bcrypt-ts-edge'
 import type { NextAuthConfig } from 'next-auth'
+import { prisma } from './db/prisma'
 
 export const config = {
     pages: {
@@ -48,6 +48,7 @@ export const config = {
     ],
     callbacks: {
         async session({ session,  user, trigger, token }: any) {
+            console.log({token})
             session.user.id = token.sub
             session.user.role = token.role
             session.user.name = token.name
@@ -60,20 +61,20 @@ export const config = {
           return session
         },
 
-async jwt({token, user, trigger, session}) {
-    if(user) {
-            token.role = user.role
-    } 
-    if(user.name === 'NO_NAME') {
-        token.name = user.email!.split('@')[0]
+// async jwt({token, user, trigger, session}) {
+//     if(user) {
+//             token.role = user.role
+//     } 
+//     if(user.name === 'NO_NAME') {
+//         token.name = user.email!.split('@')[0]
 
-        await prisma.user.update({
-            where: {id: user.id},
-            data: {name: token.name}
-        })
-    }
-    return token
-}
+//         await prisma.user.update({
+//             where: {id: user.id},
+//             data: {name: token.name}
+//         })
+//     }
+//     return token
+// }
 
       }
 } satisfies NextAuthConfig
