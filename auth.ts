@@ -1,9 +1,12 @@
-import NextAuh from 'next-auth'
+import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compareSync } from 'bcrypt-ts-edge'
 import type { NextAuthConfig } from 'next-auth'
-import { prisma } from './db/prisma'
+import { prisma } from '@/db/prisma'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+
 
 export const config = {
     pages: {
@@ -23,16 +26,16 @@ export const config = {
             },
 
             //@ts-ignore
-    async authorize(credentials: { email: string, password: string }) {
-        if(credentials === null) return null
+    async authorize(credentials) {
+        if(credentials == null) return null
         const user = await prisma.user.findFirst({
             where: {
-                email: credentials.email
+                email: credentials.email as string
             }
         })
 
         if(user && user.password) {
-            const isMatch = compareSync(credentials.password, user.password)
+            const isMatch = compareSync(credentials.password as string, user.password)
             if(isMatch) {
                 return {
                     id:user.id,
@@ -41,14 +44,13 @@ export const config = {
                     role: user.role
                 }
             }
-            return null
         }
+        return null
     }
-        })
-    ],
+        })],
     callbacks: {
         async session({ session,  user, trigger, token }: any) {
-            console.log({token})
+        
             session.user.id = token.sub
             session.user.role = token.role
             session.user.name = token.name
@@ -61,22 +63,37 @@ export const config = {
           return session
         },
 
-// async jwt({token, user, trigger, session}) {
-//     if(user) {
-//             token.role = user.role
-//     } 
-//     if(user.name === 'NO_NAME') {
-//         token.name = user.email!.split('@')[0]
+async jwt({token, user, trigger, session}: any) {
+    if(user) {
+            token.role = user.role
+    } 
+    if(user?.name === 'NO_NAME') {
+        token.name = user.email!.split('@')[0]
 
-//         await prisma.user.update({
-//             where: {id: user.id},
-//             data: {name: token.name}
-//         })
-//     }
-//     return token
-// }
+        await prisma.user.update({
+            where: {id: user.id},
+            data: {name: token.name}
+        })
+    }
+    return token
+},
+authorized({request, auth}: any) {
 
+    if(!request.cookies.get('sessionCartId')) {
+            const sessionCartId = crypto.randomUUID()
+           const newRequestHeaders = new Headers(request.headers)
+           const response = NextResponse.next({
+            request:{
+                headers: newRequestHeaders
+            }
+           })
+           response.cookies.set('sessionCartId', sessionCartId)
+           return response
+    }else {
+        return true
+    }
+}
       }
 } satisfies NextAuthConfig
 
-export const {handlers, auth, signIn, signOut} = NextAuh(config)
+export const {handlers, auth, signIn, signOut} = NextAuth(config)

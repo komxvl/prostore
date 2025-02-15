@@ -18,16 +18,36 @@ export const insertProducts = z.object({
 
 export const signInFormSchema = z.object({
     email: z.string().email('Invalod email'),
-    password: z.string().min(6, "At last 6 symbols")
+    password: z.string().min(6, "Pwd At last 6 symbols")
 }) 
 
 
 export const signUpFormSchema = z.object({
-    name: z.string().min(3, "At least 3 charactesr"),
+    name: z.string().min(3, "Name At least 3 charactesr"),
     email: z.string().email('Invalod email'),
-    password: z.string().min(6, "At last 6 symbols"),
-    confirmPassword: z.string().min(6, "At last 6 symbols").refine((data: any) => data.password === data.confirmPassword, {
+    password: z.string().min(6, "PWD At last 6 symbols"),
+    confirmPassword: z.string().min(6, "Confirm pwd At last 6 symbols").refine((data: any) => data.password === data.confirmPassword, {
         message: "Not equal",
         path: ['confirmPassword']
     })
 }) 
+
+export const cartItemSchema = z.object({
+    productId: z.string().min(1, 'Product is required'),
+    name: z.string().min(1, 'Name is required'),
+    slug: z.string().min(1, 'Slug is required'),
+    qty: z.number().int().nonnegative('Quantity must be a positive number'),
+    image: z.string().min(1, 'Image is required'),
+    price: currency,
+  });
+  
+  export const insertCartSchema = z.object({
+    items: z.array(cartItemSchema),
+    itemsPrice: currency,
+    totalPrice: currency,
+    shippingPrice: currency,
+    taxPrice: currency,
+    sessionCartId: z.string().min(1, 'Session cart id is required'),
+    userId: z.string().optional().nullable(),
+  });
+  

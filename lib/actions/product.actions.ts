@@ -1,6 +1,6 @@
 'use server'
 import { PrismaClient } from "@prisma/client"
-import { converToPlainObj } from "../utils";
+import { convertToPlainObject } from "../utils";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 
 
@@ -12,7 +12,7 @@ export async function getLatestProducts() {
         orderBy: {createdAt: 'desc'}
     })
 
-    return converToPlainObj(data)
+    return convertToPlainObject(data)
 }
 
 export async function getProductBySlug(slug: string) {
@@ -22,5 +22,5 @@ export async function getProductBySlug(slug: string) {
         where:{slug}
     })
 
-    return converToPlainObj(data)
+    return convertToPlainObject(data)
 }
