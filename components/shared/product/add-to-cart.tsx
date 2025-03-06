@@ -6,7 +6,7 @@ import { Cart, CartItem } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import { useTransition } from 'react';
-import { addItemToCart } from '@/lib/actions/cart.actions';
+import { addItemToCart, removeItemFromCart } from '@/lib/actions/cart.actions';
 
 const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
   const router = useRouter();
@@ -15,6 +15,10 @@ const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
   const [isPending, startTransition] = useTransition();
 
   const handleAddToCart = async () => {
+    startTransition(async () => {
+
+   
+
     const res = await addItemToCart(item);
 
     if (!res.success) {
@@ -26,7 +30,7 @@ const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
     }
 
     toast({
-      description: `${item.name} added to cart`,
+      description: res.message,
       action: (
         <ToastAction
           className='bg-primary text-white hover:bg-gray-800'
@@ -38,15 +42,30 @@ const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
       ),
     });
 
+  })
+
   };
 
+  const handleRemoveFromCart = async () => {
+startTransition(async () => {
+  const res = await removeItemFromCart(item.productId)
+
+  toast({
+    variant: res.success ? 'default' : 'destructive',
+    description: res.message
+  })
+
+  return
+})
+  }
+
+
   // Check if item is in cart
-  const existItem =
-    cart && cart.items.find((x) => x.productId === item.productId);
+  const existItem =  cart && cart.items.find((x) => x.productId === item.productId);
 
   return existItem ? (
     <div>
-      <Button type='button' variant='outline'>
+      <Button type='button' variant='outline' onClick={handleRemoveFromCart}>
         {isPending ? (
           <Loader className='w-4 h-4 animate-spin' />
         ) : (
@@ -75,7 +94,3 @@ const AddToCart = ({ cart, item }: { cart?: Cart; item: CartItem }) => {
 };
 
 export default AddToCart;
-
-function removeItemFromCart(productId: string) {
-    throw new Error('Function not implemented.');
-}
