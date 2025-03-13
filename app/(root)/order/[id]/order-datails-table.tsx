@@ -21,12 +21,12 @@ import { useTransition } from 'react';
 //   PayPalScriptProvider,
 //   usePayPalScriptReducer,
 // } from '@paypal/react-paypal-js';
-// import {
-//   createPayPalOrder,
-//   approvePayPalOrder,
-//   updateOrderToPaidCOD,
-//   deliverOrder,
-// } from '@/lib/actions/order.actions';
+import {
+  // createPayPalOrder,
+  // approvePayPalOrder,
+  updateOrderToPaidCOD,
+  deliverOrder,
+} from '@/lib/actions/order.actions';
 // import StripePayment from './stripe-payment';
 
 const OrderDetailsTable = ({
@@ -56,8 +56,6 @@ const OrderDetailsTable = ({
   } = order;
 
   const { toast } = useToast();
-
-//   const PrintLoadingState = () => {
 //     const [{ isPending, isRejected }] = usePayPalScriptReducer();
 //     let status = '';
 
@@ -91,53 +89,53 @@ const OrderDetailsTable = ({
 //     });
 //   };
 
-//   // Button to mark order as paid
-//   const MarkAsPaidButton = () => {
-//     const [isPending, startTransition] = useTransition();
-//     const { toast } = useToast();
+  
+  // const MarkAsPaidButton = () => {
+  //   const [isPending, startTransition] = useTransition();
+  //   const { toast } = useToast();
 
-//     return (
-//       <Button
-//         type='button'
-//         disabled={isPending}
-//         onClick={() =>
-//           startTransition(async () => {
-//             const res = await updateOrderToPaidCOD(order.id);
-//             toast({
-//               variant: res.success ? 'default' : 'destructive',
-//               description: res.message,
-//             });
-//           })
-//         }
-//       >
-//         {isPending ? 'processing...' : 'Mark As Paid'}
-//       </Button>
-//     );
-//   };
+  //   return (
+  //     <Button
+  //       type='button'
+  //       disabled={isPending}
+  //       onClick={() =>
+  //         startTransition(async () => {
+  //           const res = await updateOrderToPaidCOD(order.id);
+  //           toast({
+  //             variant: res.success ? 'default' : 'destructive',
+  //             description: res.message,
+  //           });
+  //         })
+  //       }
+  //     >
+  //       {isPending ? 'processing...' : 'Mark As Paid'}
+  //     </Button>
+  //   );
+  // };
 
-//   // Button to mark order as delivered
-//   const MarkAsDeliveredButton = () => {
-//     const [isPending, startTransition] = useTransition();
-//     const { toast } = useToast();
+  
+  // const MarkAsDeliveredButton = () => {
+  //   const [isPending, startTransition] = useTransition();
+  //   const { toast } = useToast();
 
-//     return (
-//       <Button
-//         type='button'
-//         disabled={isPending}
-//         onClick={() =>
-//           startTransition(async () => {
-//             const res = await deliverOrder(order.id);
-//             toast({
-//               variant: res.success ? 'default' : 'destructive',
-//               description: res.message,
-//             });
-//           })
-//         }
-//       >
-//         {isPending ? 'processing...' : 'Mark As Delivered'}
-//       </Button>
-//     );
-//   };
+  //   return (
+  //     <Button
+  //       type='button'
+  //       disabled={isPending}
+  //       onClick={() =>
+  //         startTransition(async () => {
+  //           const res = await deliverOrder(order.id);
+  //           toast({
+  //             variant: res.success ? 'default' : 'destructive',
+  //             description: res.message,
+  //           });
+  //         })
+  //       }
+  //     >
+  //       {isPending ? 'processing...' : 'Mark As Delivered'}
+  //     </Button>
+  //   );
+  // };
 
   return (
     <>
@@ -234,8 +232,13 @@ const OrderDetailsTable = ({
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
-
-    
+{/* {isAdmin && !isPaid && paymentMethod == 'CashOnDelivery' && 
+<MarkAsPaidButton />
+}
+{isAdmin && !isPaid && paymentMethod == 'CashOnDelivery' && 
+<MarkAsDeliveredButton />
+} */}
+                  
             </CardContent>
           </Card>
         </div>
@@ -245,32 +248,3 @@ const OrderDetailsTable = ({
 };
 
 export default OrderDetailsTable;
-
-
-//  {/* PayPal Payment */}
-//  {!isPaid && paymentMethod === 'PayPal' && (
-//     <div>
-//       <PayPalScriptProvider options={{ clientId: paypalClientId }}>
-//         <PrintLoadingState />
-//         <PayPalButtons
-//           createOrder={handleCreatePayPalOrder}
-//           onApprove={handleApprovePayPalOrder}
-//         />
-//       </PayPalScriptProvider>
-//     </div>
-//   )}
-
-//   {/* Stripe Payment */}
-//   {!isPaid && paymentMethod === 'Stripe' && stripeClientSecret && (
-//     <StripePayment
-//       priceInCents={Number(order.totalPrice) * 100}
-//       orderId={order.id}
-//       clientSecret={stripeClientSecret}
-//     />
-//   )}
-
-//   {/* Cash On Delivery */}
-//   {isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
-//     <MarkAsPaidButton />
-//   )}
-//   {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}

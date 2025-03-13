@@ -135,4 +135,34 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       return { success: false, message: formatError(error) };
     }
   }
+
+  export async function updateProfile( user : {name: string, email: string}) {
+    try {
+      const session = await auth()
+      console.log('Session', session)
+      const currentUser = await prisma.user.findFirst({
+        where: {
+         id: session?.user?.id 
+        }
+      })
+      console.log('currentUser', currentUser)
+
+    if(!currentUser) throw new Error('user not found')
+
+      await prisma.user.update({
+        where: {
+          id: currentUser.id 
+         },
+         data: {
+          name: user.name,
+         }
+      })
+
+      return {success: true, message: "Name updated"}
+
+    }catch(error) {
+      console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+      return {success: false, message: formatError(error)}
+    }
+  }
   
